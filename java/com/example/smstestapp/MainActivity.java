@@ -20,6 +20,8 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import net.yslibrary.android.keyboardvisibilityevent.util.UIUtil;
+
 
 public class MainActivity extends AppCompatActivity{
     // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an app-defined int constant.
@@ -30,6 +32,7 @@ public class MainActivity extends AppCompatActivity{
     private EditText MessageEditText;
     private EditText receiverEditText;
     private LinearLayout QuickReplyLinearLayout;
+    private boolean quickReplyHide = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,10 +77,25 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (!hasFocus) {
-                    QuickReplyLinearLayout.setVisibility(View.GONE);
+                    quickReplyHide = true;
                 } else {
-                    QuickReplyLinearLayout.setVisibility(View.VISIBLE);
+                    quickReplyHide = false;
                 }
+            }
+        });
+
+        //根據鍵盤顯示或隱藏狀態，彈出或收起QuickReplyLinearLayout
+        SoftKeyBoardListener.setListener(this, new SoftKeyBoardListener.OnSoftKeyBoardChangeListener() {
+            @Override
+            public void keyBoardShow(int height) {
+                //Toast.makeText(getApplicationContext(), "键盘显示 高度" + height, Toast.LENGTH_SHORT).show();
+                if(quickReplyHide == false)
+                    QuickReplyLinearLayout.setVisibility(View.VISIBLE);
+            }
+            @Override
+            public void keyBoardHide(int height) {
+                //Toast.makeText(getApplicationContext(), "键盘隐藏 高度" + height, Toast.LENGTH_SHORT).show();
+                QuickReplyLinearLayout.setVisibility(View.GONE);
             }
         });
 
@@ -85,7 +103,6 @@ public class MainActivity extends AppCompatActivity{
         sendBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 String phoneNo = receiverEditText.getText().toString();
                 String message = MessageEditText.getText().toString();
 
@@ -117,6 +134,7 @@ public class MainActivity extends AppCompatActivity{
     //receive message
     private boolean sendChatMessage(boolean side, String messageIntent) {
         chatArrayAdapter.add(new ChatMessage(side, messageIntent));
+        UIUtil.hideKeyboard(this);
         return true;
     }
 
@@ -139,4 +157,5 @@ public class MainActivity extends AppCompatActivity{
             }
         }
     }
+
 }
