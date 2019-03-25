@@ -11,7 +11,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.telephony.SmsManager;
-//import android.util.Log;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.Button;
@@ -32,7 +31,11 @@ public class MainActivity extends AppCompatActivity{
     private EditText MessageEditText;
     private EditText receiverEditText;
     private LinearLayout QuickReplyLinearLayout;
+    private Button replyBtn1;
+    private Button replyBtn2;
+    private Button replyBtn3;
     private boolean quickReplyHide = true;
+    private boolean quickReplyHideKB = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +43,9 @@ public class MainActivity extends AppCompatActivity{
         setContentView(R.layout.activity_main);
 
         Button sendBtn = findViewById(R.id.sendBtn);
+        replyBtn1 = findViewById(R.id.replyBtn1);
+        replyBtn2 = findViewById(R.id.replyBtn2);
+        replyBtn3 = findViewById(R.id.replyBtn3);
         MessageEditText = findViewById(R.id.MessageEditText);
         receiverEditText = findViewById(R.id.receiverEditText);
         chatListView = findViewById(R.id.chatListView);
@@ -72,14 +78,17 @@ public class MainActivity extends AppCompatActivity{
         };
         registerReceiver(receiver, new IntentFilter("sendABroadCast"));
 
-        //彈出或收起QuickReplyLinearLayout
+        //根據edit_text focus與否，彈出或收起QuickReplyLinearLayout
         MessageEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (!hasFocus) {
                     quickReplyHide = true;
+                    QuickReplyLinearLayout.setVisibility(View.GONE);
                 } else {
                     quickReplyHide = false;
+                    if(quickReplyHideKB == false)
+                        QuickReplyLinearLayout.setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -88,12 +97,14 @@ public class MainActivity extends AppCompatActivity{
         SoftKeyBoardListener.setListener(this, new SoftKeyBoardListener.OnSoftKeyBoardChangeListener() {
             @Override
             public void keyBoardShow(int height) {
+                quickReplyHideKB = false;
                 //Toast.makeText(getApplicationContext(), "键盘显示 高度" + height, Toast.LENGTH_SHORT).show();
                 if(quickReplyHide == false)
                     QuickReplyLinearLayout.setVisibility(View.VISIBLE);
             }
             @Override
             public void keyBoardHide(int height) {
+                quickReplyHideKB = true;
                 //Toast.makeText(getApplicationContext(), "键盘隐藏 高度" + height, Toast.LENGTH_SHORT).show();
                 QuickReplyLinearLayout.setVisibility(View.GONE);
             }
@@ -136,6 +147,25 @@ public class MainActivity extends AppCompatActivity{
         chatArrayAdapter.add(new ChatMessage(side, messageIntent));
         UIUtil.hideKeyboard(this);
         return true;
+    }
+
+    //按下快速回覆按鈕，將字串複製到message edit text
+    public void ReplyButtonClicked(View v){
+        switch(v.getId()){
+            case R.id.replyBtn1:
+                MessageEditText.setText(replyBtn1.getText());
+                MessageEditText.setSelection(MessageEditText.getText().length());
+                break;
+            case R.id.replyBtn2:
+                MessageEditText.setText(replyBtn2.getText());;
+                MessageEditText.setSelection(MessageEditText.getText().length());
+                break;
+            case R.id.replyBtn3:
+                MessageEditText.setText(replyBtn3.getText());
+                MessageEditText.setSelection(MessageEditText.getText().length());
+                break;
+        }
+
     }
 
     // permission was granted
