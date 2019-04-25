@@ -17,9 +17,9 @@
 ...
 android:networkSecurityConfig="@xml/network_security_config"
 />
-```        
-        
-        
+```      
+***    
+
 * 從Android studio app訪問django網頁，url為主機ip address，django中settings.py要更改`ALLOWED_HOSTS = ['xxx.xxx.x.xx']`        
 ```java
 new Thread(new Runnable() {
